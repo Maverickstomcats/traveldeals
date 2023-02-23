@@ -4,7 +4,7 @@
 #to install the necessary components
 import requests
 from bs4 import BeautifulSoup
-
+import csv
 # get the html
 url = "https://www.amazon.com/Best-Sellers-Books/zgbs/books"
 headers = {
@@ -13,14 +13,34 @@ headers = {
 }
 
 page = requests.get(url, headers=headers)
-
 soup = BeautifulSoup(page.content, 'html.parser')
 # print(soup.prettify())
 # #get all books
 books = soup.find_all(id="gridItemRoot")
 book = books[0]
+
+
+# title = children.contents[1].text
+# author = children.contents[2].text
+# price = children.contents[-1].text
+
+  
 # #get info from first book
 #print(books[0])
-
-rank = book.find('span', class_='zg-bdg-text').text[1:7]
-print(rank)
+for book in books: 
+  rank = book.find('span', class_='zg-bdg-text').text[1:]
+  
+  children = book.find('div',class_="zg-grid-general-faceout").div
+  
+  
+  title = children.contents[1].text
+  author = children.contents[2].text
+  price = children.contents[-1].text
+  print(rank)
+  print(title)
+  print(author)
+  print(price)
+  csv_headers = ['Rank', 'Title', 'Author', 'Price']
+  with open('amazon_books.csv','a', encoding='utf-8', newline="")as f:
+    writer = csv.writer(f)
+    writer.writerow([rank,title,author,price])
